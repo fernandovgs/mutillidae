@@ -41,11 +41,11 @@
 
 		if ($lFormSubmitted){
 			
-	    	switch ($lUploadDirectoryFlag){
-	    		case "CLIENT_DECIDES": $lTempDirectory = $_REQUEST["UPLOAD_DIRECTORY"];break;
-				case "WEB_SERVER": $lTempDirectory = $lWebServerUploadDirectory;break;
-				case "TEMP_DIRECTORY": $lTempDirectory = sys_get_temp_dir();break;
-	    	}// end switch
+			// Always put file on temp directory
+	    	$lTempDirectory = sys_get_temp_dir();
+
+	    	// Always restrict file size
+	    	$lAllowedFileSize = 20000;
 			
 			/* Common file properties */
 			$lFilename = $_FILES["filename"]["name"];
@@ -83,24 +83,38 @@
 			}//end if UPLOAD_ERR_OK
 			
 			$lFileValid = TRUE;
-			if ($lValidateFileUpload){
-				$lValidationMessage = "Validation performed.";
-				
-				if (!in_array($lFileExtension, $lAllowedFileExtensions)) {
-					$lValidationMessage .= " File extension {$lFileExtension} not allowed.";
-					$lFileValid = FALSE;
-				}// end if
 
-				if (!in_array($lFileType, $lAllowedFileTypes)) {
-					$lValidationMessage .= " File type {$lFileType} not allowed.";
-					$lFileValid = FALSE;
-				}// end if
-	
-				if ($lFileSize > $lAllowedFileSize){
-					$lValidationMessage .= "File size {$lFileSizeString} exceeds allowed file size {$lAllowedFileSizeString}.";
-					$lFileValid = FALSE;
-				}// end if
-			}// end if $lValidateFileUpload
+			// Always validade file
+			$lValidationMessage = "Validation performed.";
+			
+			// Check if file extension is allowed
+			if (!in_array($lFileExtension, $lAllowedFileExtensions)) {
+				$lValidationMessage .= " File extension {$lFileExtension} not allowed.";
+				$lFileValid = FALSE;
+			}// end if
+
+			// Check if allowed file type
+			if (!in_array($lFileType, $lAllowedFileTypes)) {
+				$lValidationMessage .= " File type {$lFileType} not allowed.";
+				$lFileValid = FALSE;
+			}// end if
+
+			// Check file size
+			if ($lFileSize > $lAllowedFileSize){
+				$lValidationMessage .= "File size {$lFileSizeString} exceeds allowed file size {$lAllowedFileSizeString}.";
+				$lFileValid = FALSE;
+			}// end if
+
+
+			// Check filename is not using invalid characters or multiple dots (file extensions)
+			// This tries to avoid common techniques used to avoid file extension checks
+			$dotCount = substr_count($lFilename, ".");
+			if($dotCount > 1 || preg_match('/[^A-Za-z0-9\-\.() ]+/', $lFilename)){
+
+				$lValidationMessage .= "Invalid filename, please use only valid characters and a single dot.";
+
+				$lFileValid = FALSE;
+			}// end if
 			
 			if ($lFileValid){
 				if (move_uploaded_file($lFileTempName, $lFilePermanentName)) {
