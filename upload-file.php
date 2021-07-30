@@ -87,7 +87,7 @@
 			// Always validade file
 			$lValidationMessage = "Validation performed.";
 			
-			// Check if file extension is allowed
+			// Check if file extension is correct
 			if (!in_array($lFileExtension, $lAllowedFileExtensions)) {
 				$lValidationMessage .= " File extension {$lFileExtension} not allowed.";
 				$lFileValid = FALSE;
@@ -107,7 +107,6 @@
 
 
 			// Check filename is not using invalid characters or multiple dots (file extensions)
-			// This tries to avoid common techniques used to avoid file extension checks
 			$dotCount = substr_count($lFilename, ".");
 			if($dotCount > 1 || preg_match('/[^A-Za-z0-9\-\.() ]+/', $lFilename)){
 

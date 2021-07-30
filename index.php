@@ -442,6 +442,19 @@
 	* END SIMULATE "SECRET" PAGES
 	* ------------------------------------------ */
 
+	/* ---------------------------------------------
+	* RESTRICTING SOME PAGES TO AUTHENTICATED USERS
+	* --------------------------------------------- */
+	switch ($lPage){
+		case "upload-file.php":
+			if (!isset($_SESSION["loggedin"]) || $_SESSION['loggedin'] == 'False'){
+				$lPage=__ROOT__.'/login.php';
+				$message = 'Please login before accessing the file upload page.';
+			}
+		break;
+		default:break;
+	}
+
 	/* ------------------------------------------
      * Set Content Security Policy (CSP) if needed
      * ------------------------------------------ */

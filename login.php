@@ -79,6 +79,13 @@
 			<tr id="id-authentication-failed-tr" style="display: none;">
 				<td id="id-authentication-failed-td" colspan="2" class="error-message"></td>
 			</tr>
+			<?php 
+				if (isset($message)) {
+					echo "<tr id='id-authentication-failed-tr'>
+							<td id='id-authentication-failed-td' colspan='2' class='error-message'>{$message}</td>
+						</tr>";
+				}//end if
+			?>
 			<tr><td></td></tr>
 			<tr>
 				<td colspan="2" class="form-header">Please sign-in</td>
